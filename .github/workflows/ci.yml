@@ -1,6 +1,6 @@
 name: CI
 
-on: [push, pull_request]
+on: [push, pull_request_target]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -95,16 +95,15 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
       - name: Run tests
         run: mix test --cover
-      - name: Save PR information
-        run: |
-          echo "${{ github.event.pull_request.number }}" > cover/PR_NUMBER
-          echo "${{ github.event.pull_request.head.sha }}" > cover/PR_SHA
-        if: github.event.pull_request
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+      - run: sudo apt-get -y install lcov
+      - name: Report code coverage
+        uses: mbta/github-actions-report-lcov@v4
         with:
-          name: elixir-lcov
-          path: cover/
+          coverage-files: cover/lcov.*.info
+          minimum-coverage: 50
+          artifact-name: code-coverage-report
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          update-comment: true
 
   node_prettier:
     name: NodeJS Prettier
