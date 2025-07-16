@@ -10,6 +10,7 @@ ARG DEBIAN_RELEASE=bookworm
 ARG DEBIAN_VERSION=${DEBIAN_RELEASE}-20250224
 
 FROM hexpm/elixir:$ELIXIR_VERSION-erlang-$ERLANG_VERSION-debian-$DEBIAN_VERSION AS elixir-builder
+ARG BUILDKIT_SBOM_SCAN_STAGE=true
 
 ENV LANG=C.UTF-8 \
   MIX_ENV=prod
@@ -37,6 +38,7 @@ mix eval "Application.ensure_all_started(:tzdata); Tzdata.DataBuilder.load_and_s
 EOT
 
 FROM public.ecr.aws/docker/library/node:${NODE_VERSION}-${DEBIAN_RELEASE} AS assets-builder
+ARG BUILDKIT_SBOM_SCAN_STAGE=true
 
 WORKDIR /app
 
@@ -60,6 +62,7 @@ COPY rel rel
 RUN mix release
 
 FROM public.ecr.aws/docker/library/debian:${DEBIAN_VERSION}-slim
+ARG BUILDKIT_SBOM_SCAN_STAGE=true
 
 RUN apt-get update --allow-releaseinfo-change && \
   apt-get upgrade -y --no-install-recommends && \

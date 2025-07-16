@@ -38,6 +38,8 @@ jobs:
           cache-to: type=gha,mode=max
           cache-from: ${{ steps.cache-outputs.outputs.cache-from }}
           tags: ride_along
+          sbom: true
+          provenance: mode=max
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
