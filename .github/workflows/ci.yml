@@ -138,3 +138,17 @@ jobs:
         working-directory: assets
       - run: npm run standard
         working-directory: assets
+
+  trivvy:
+    name: Trivvy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner (Repo)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          trivy-config: trivy.yml
+        env:
+          TRIVY_SKIP_DB_UPDATE: true
+          TRIVY_SKIP_JAVA_DB_UPDATE: true
