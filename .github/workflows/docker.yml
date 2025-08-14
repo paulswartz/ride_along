@@ -40,6 +40,8 @@ jobs:
           tags: ride_along
           sbom: true
           provenance: mode=max
+      - name: Output SBOM
+        run: cat out/sbom.spdx.json
       - name: Run Trivy vulnerability scanner (Docker)
         uses: aquasecurity/trivy-action@master
         with:
