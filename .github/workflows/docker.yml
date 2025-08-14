@@ -34,14 +34,19 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          load: true
-          cache-to: type=gha,mode=max
+          outputs: type=local,dest=out
+          CACHE-to: type=gha,mode=max
           cache-from: ${{ steps.cache-outputs.outputs.cache-from }}
           tags: ride_along
-      - name: Run Trivy vulnerability scanner
+          sbom: true
+          provenance: mode=max
+      - name: Output SBOM
+        run: cat out/sbom.spdx.json
+      - name: Run Trivy vulnerability scanner (Docker)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ride_along
+          scan-type: fs
+          scan-ref: out
           trivy-config: trivy.yml
         env:
           TRIVY_SKIP_DB_UPDATE: true
